@@ -15,7 +15,7 @@ public class SqlCourseRepository {
 
     private final String url = "jdbc:postgresql://localhost:5432/sql_course";
     private final String username = "postgres";
-    private final String password = "MD100cs16_";
+    private final String password = "";
 
     public Connection getConnection() {
         try {
