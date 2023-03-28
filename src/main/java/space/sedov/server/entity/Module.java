@@ -26,6 +26,17 @@ public class Module {
     @Column(name = "text")
     private String text;
 
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    @Column(name = "time")
+    private String time;
+
     @OneToMany(mappedBy = "module")
     private List<Lesson> lessons = new ArrayList<>();
 

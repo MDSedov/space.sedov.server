@@ -21,6 +21,9 @@ public class Task {
     @Column(name = "number")
     private int number;
 
+    @Column(name = "complexity")
+    private int complexity;
+
     @Column(name = "title")
     private String title;
 

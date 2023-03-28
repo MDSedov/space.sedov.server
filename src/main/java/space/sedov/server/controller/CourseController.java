@@ -10,6 +10,7 @@ import space.sedov.server.service.CourseService;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class CourseController {
     @Autowired
     private CourseService courseService;

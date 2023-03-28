@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     public Optional<Lesson> findById(Integer id);
-    public List<Lesson> findLessonsByCourse(Course course);
-    public List<Lesson> findLessonsByModule(Module module);
+    public List<Lesson> findLessonsByCourseOrderByNumber(Course course);
+    public List<Lesson> findLessonsByModuleOrderByNumber(Module module);
 }

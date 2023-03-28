@@ -34,7 +34,7 @@ public class TaskService implements TaskServiceInterface{
     @Override
     public JSONObject getTestResult(String correctAnswer, String userAnswer) {
         JSONObject result = new JSONObject();
-        if (correctAnswer.equals(userAnswer)) {
+        if (userAnswer.contains(correctAnswer)) {
             result.put("result", "true");
         } else {
             result.put("result", "false");

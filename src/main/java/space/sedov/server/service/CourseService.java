@@ -41,7 +41,7 @@ public class CourseService implements CourseServiceInterface {
         Optional<Course> optional = courseRepository.findById(id);
         if (optional.isPresent()) {
             Course course = optional.get();
-            return lessonRepository.findLessonsByCourse(course);
+            return lessonRepository.findLessonsByCourseOrderByNumber(course);
         }
         return null;
     }

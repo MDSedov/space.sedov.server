@@ -19,6 +19,17 @@ public class Course {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "level")
+    private int level;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     @Column(name = "text")
     private String text;
 

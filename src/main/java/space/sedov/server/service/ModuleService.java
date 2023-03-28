@@ -46,7 +46,7 @@ public class ModuleService implements ModuleServiceInterface {
         Optional<Module> optional = moduleRepository.findById(id);
         if (optional.isPresent()) {
             Module module = optional.get();
-            return lessonRepository.findLessonsByModule(module);
+            return lessonRepository.findLessonsByModuleOrderByNumber(module);
         }
         return null;
     }

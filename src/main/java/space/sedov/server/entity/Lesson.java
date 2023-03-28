@@ -27,6 +27,17 @@ public class Lesson {
     @Column(name = "text")
     private String text;
 
+    @Column(name = "time")
+    private String time;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     public int getId() {
         return id;
     }

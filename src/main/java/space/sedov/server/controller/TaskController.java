@@ -13,6 +13,7 @@ import space.sedov.server.service.TaskService;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class TaskController {
     @Autowired
     private final TaskService taskService;
@@ -32,8 +33,11 @@ public class TaskController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String check(@PathVariable int id, @RequestBody String userAnswer) {
+        System.out.println(id);
         Task task = taskService.getTaskById(id);
         if (task.getType().equals("test")) {
+            System.out.println(task.getAnswer());
+            System.out.println(userAnswer);
             return taskService.getTestResult(task.getAnswer(), userAnswer).toString();
         } else if (task.getType().equals("request")) {
             return taskService.getRequestResult(task.getAnswer(), userAnswer).toString();
