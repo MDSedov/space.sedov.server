@@ -1,6 +1,6 @@
 package space.sedov.server.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "tasks")

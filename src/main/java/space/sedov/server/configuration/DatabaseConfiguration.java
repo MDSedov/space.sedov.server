@@ -1,6 +1,5 @@
-package space.sedov.server.repository;
+package space.sedov.server.configuration;
 
-import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -13,6 +12,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
@@ -21,7 +21,7 @@ import javax.sql.DataSource;
         transactionManagerRef = "serverTransactionManager",
         basePackages = "space.sedov.server.repository"
 )
-public class ServerConfiguration {
+public class DatabaseConfiguration {
     @Value("${spring.server.datasource.url}")
     private String url;
 

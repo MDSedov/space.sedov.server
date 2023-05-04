@@ -1,6 +1,5 @@
 package space.sedov.server.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import space.sedov.server.entity.Task;
 import space.sedov.server.repository.SqlCourseRepository;
 import space.sedov.server.repository.TaskRepository;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 @Service
