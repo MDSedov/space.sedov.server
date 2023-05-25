@@ -1,4 +1,4 @@
-package space.sedov.server.service;
+package space.sedov.server.service.course;
 
 import space.sedov.server.entity.Course;
 import space.sedov.server.entity.Lesson;

@@ -1,29 +1,26 @@
 package space.sedov.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import space.sedov.server.entity.Lesson;
 import space.sedov.server.entity.Task;
-import space.sedov.server.service.LessonService;
+import space.sedov.server.service.lesson.LessonServiceImpl;
 
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/lesson")
 public class LessonController {
     @Autowired
-    private LessonService lessonService;
+    private LessonServiceImpl lessonServiceImpl;
 
-    @GetMapping("/api/lessons/{id}")
+    @GetMapping("/{id}")
     public Lesson getLessonById(@PathVariable int id) {
-        return lessonService.getLessonById(id);
+        return lessonServiceImpl.getLessonById(id);
     };
 
-    @GetMapping("/api/lessons/{id}/tasks")
+    @GetMapping("/{id}/tasks")
     public List<Task> getAllTasksByLessonId(@PathVariable int id) {
-        return lessonService.getAllTasksByLesson(id);
+        return lessonServiceImpl.getAllTasksByLesson(id);
     }
 }

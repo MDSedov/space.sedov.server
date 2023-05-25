@@ -5,37 +5,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import space.sedov.server.entity.Task;
-import space.sedov.server.service.TaskService;
+import space.sedov.server.service.task.TaskServiceImpl;
 
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/task")
 public class TaskController {
     @Autowired
-    private final TaskService taskService;
+    private final TaskServiceImpl taskServiceImpl;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
+    public TaskController(TaskServiceImpl taskServiceImpl) {
+        this.taskServiceImpl = taskServiceImpl;
     }
 
-    @GetMapping("/api/tasks/{id}")
+    @GetMapping("/{id}")
     public Task getModuleById(@PathVariable int id) {
-        return taskService.getTaskById(id);
+        return taskServiceImpl.getTaskById(id);
     }
 
-    @RequestMapping(
-            value = "/api/tasks/{id}/check",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{id}/check", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String check(@PathVariable int id, @RequestBody String userAnswer) {
         System.out.println(id);
-        Task task = taskService.getTaskById(id);
+        Task task = taskServiceImpl.getTaskById(id);
         if (task.getType().equals("test")) {
             System.out.println(task.getAnswer());
             System.out.println(userAnswer);
-            return taskService.getTestResult(task.getAnswer(), userAnswer).toString();
+            return taskServiceImpl.getTestResult(task.getAnswer(), userAnswer).toString();
         } else if (task.getType().equals("request")) {
-            return taskService.getRequestResult(task.getAnswer(), userAnswer).toString();
+            return taskServiceImpl.getRequestResult(task.getAnswer(), userAnswer).toString();
         } else {
             return new JSONObject().put("Error", "User answer type is incorrect").toString();
         }

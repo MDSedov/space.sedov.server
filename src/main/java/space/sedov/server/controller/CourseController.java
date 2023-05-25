@@ -5,33 +5,33 @@ import org.springframework.web.bind.annotation.*;
 import space.sedov.server.entity.Course;
 import space.sedov.server.entity.Lesson;
 import space.sedov.server.entity.Module;
-import space.sedov.server.service.CourseService;
+import space.sedov.server.service.course.CourseServiceImpl;
 
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/course")
 public class CourseController {
     @Autowired
-    private CourseService courseService;
+    private CourseServiceImpl courseServiceImpl;
 
-    @GetMapping("/api/courses")
+    @GetMapping("/")
     public List<Course> getAllCourses() {
-        return courseService.getAllCourses();
+        return courseServiceImpl.getAllCourses();
     }
 
-    @GetMapping("/api/courses/{id}")
+    @GetMapping("/{id}")
     public Course getCourseById(@PathVariable int id) {
-        return courseService.getCourseById(id);
+        return courseServiceImpl.getCourseById(id);
     }
 
-    @GetMapping("/api/courses/{id}/lessons")
+    @GetMapping("/{id}/lessons")
     public List<Lesson> getLessonsByCourseId(@PathVariable int id) {
-        return courseService.getAllLessonsByCourse(id);
+        return courseServiceImpl.getAllLessonsByCourse(id);
     }
 
-    @GetMapping("/api/courses/{id}/modules")
+    @GetMapping("/{id}/modules")
     public List<Module> getModulesByCourseId(@PathVariable int id) {
-        return courseService.getAllLessonsByModule(id);
+        return courseServiceImpl.getAllLessonsByModule(id);
     }
 }

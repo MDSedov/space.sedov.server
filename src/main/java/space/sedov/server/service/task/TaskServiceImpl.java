@@ -1,4 +1,4 @@
-package space.sedov.server.service;
+package space.sedov.server.service.task;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,11 +11,11 @@ import space.sedov.server.repository.TaskRepository;
 import java.util.Optional;
 
 @Service
-public class TaskService implements TaskServiceInterface{
+public class TaskServiceImpl implements TaskServiceInterface{
     @Autowired
     private final TaskRepository taskRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 

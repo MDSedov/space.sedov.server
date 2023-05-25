@@ -1,4 +1,4 @@
-package space.sedov.server.service;
+package space.sedov.server.service.task;
 
 import org.json.JSONObject;
 import space.sedov.server.entity.Task;

@@ -1,4 +1,4 @@
-package space.sedov.server.service;
+package space.sedov.server.service.module;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ModuleService implements ModuleServiceInterface {
+public class ModuleServiceImpl implements ModuleServiceInterface {
     @Autowired
     private final ModuleRepository moduleRepository;
 
@@ -23,9 +23,9 @@ public class ModuleService implements ModuleServiceInterface {
     @Autowired
     private final TaskRepository taskRepository;
 
-    public ModuleService(ModuleRepository moduleRepository,
-                         LessonRepository lessonRepository,
-                         TaskRepository taskRepository) {
+    public ModuleServiceImpl(ModuleRepository moduleRepository,
+                             LessonRepository lessonRepository,
+                             TaskRepository taskRepository) {
         this.moduleRepository = moduleRepository;
         this.lessonRepository = lessonRepository;
         this.taskRepository = taskRepository;

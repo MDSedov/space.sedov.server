@@ -1,4 +1,4 @@
-package space.sedov.server.service;
+package space.sedov.server.service.lesson;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class LessonService implements LessonServiceInterface{
+public class LessonServiceImpl implements LessonServiceInterface{
     @Autowired
     private final LessonRepository lessonRepository;
 
     @Autowired
     private final TaskRepository taskRepository;
 
-    public LessonService(LessonRepository lessonRepository,
-                         TaskRepository taskRepository) {
+    public LessonServiceImpl(LessonRepository lessonRepository,
+                             TaskRepository taskRepository) {
         this.lessonRepository = lessonRepository;
         this.taskRepository = taskRepository;
     }

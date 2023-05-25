@@ -1,35 +1,32 @@
 package space.sedov.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import space.sedov.server.entity.Module;
 import space.sedov.server.entity.Task;
-import space.sedov.server.service.LessonService;
-import space.sedov.server.service.ModuleService;
+import space.sedov.server.service.lesson.LessonServiceImpl;
+import space.sedov.server.service.module.ModuleServiceImpl;
 
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/module")
 public class ModuleController {
     @Autowired
-    private final ModuleService moduleService;
+    private final ModuleServiceImpl moduleServiceImpl;
 
-    public ModuleController(ModuleService moduleService, LessonService lessonService) {
-        this.moduleService = moduleService;
+    public ModuleController(ModuleServiceImpl moduleServiceImpl, LessonServiceImpl lessonServiceImpl) {
+        this.moduleServiceImpl = moduleServiceImpl;
     }
 
-    @GetMapping("/api/modules/{id}")
+    @GetMapping("/{id}")
     public Module getModuleById(@PathVariable int id) {
-        return moduleService.getModuleById(id);
+        return moduleServiceImpl.getModuleById(id);
     }
 
-    @GetMapping("/api/modules/{id}/tasks")
+    @GetMapping("/{id}/tasks")
     public List<Task> getAllTasksByModuleId(@PathVariable int id) {
-        return moduleService.getAllTasksByModule(id);
+        return moduleServiceImpl.getAllTasksByModule(id);
     }
 
 }

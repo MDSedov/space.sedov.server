@@ -1,25 +1,97 @@
 package space.sedov.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import space.sedov.server.entity.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import space.sedov.server.service.user.UserRequest;
+import space.sedov.server.service.response.MessageService;
+import space.sedov.server.service.response.ResponseService;
 import space.sedov.server.service.user.UserDetailsServiceImpl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 @RestController
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/user")
 public class UserController {
     @Autowired
-    private UserDetailsServiceImpl userDetailsServiceImpl;
+    private UserDetailsServiceImpl userDetailsService;
 
-    @GetMapping("/api/user")
-    public String getUserInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User)authentication.getPrincipal();
-        System.out.println(user.toString());
-        return user.toString();
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @Autowired
+    private HttpServletResponse httpServletResponse;
+
+    @GetMapping("/")
+    public ResponseService getCurrentUser() {
+        return userDetailsService.getCurrentUser();
+    }
+
+    @PostMapping("/check")
+    @ResponseBody
+    public ResponseService checkUser(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.findUserByEmail(userRequest);
+    }
+
+    @PostMapping("/signin")
+    @ResponseBody
+    public ResponseService signin(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.signin(userRequest);
+    }
+
+    @PostMapping("/signup")
+    @ResponseBody
+    public ResponseService signup(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.signup(userRequest);
+    }
+
+    @GetMapping("/signout")
+    @ResponseBody
+    public ResponseService signout() {
+        return userDetailsService.signout();
+    }
+
+    @PostMapping("/change/data")
+    @ResponseBody
+    public ResponseService changePersonalData(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.changePersonalData(userRequest);
+    }
+
+    @PostMapping("/change/password")
+    @ResponseBody
+    public ResponseService changePassword(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.changePassword(userRequest);
+    }
+
+    @PostMapping("/change/email")
+    @ResponseBody
+    public ResponseService changeEmail(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.changeEmail(userRequest);
+    }
+
+    @GetMapping(value = "/email/confirmation/{token}")
+    public ResponseService confirmRegistration(@PathVariable("token") String token) {
+        return userDetailsService.confirmationEmail(token);
     }
 }
