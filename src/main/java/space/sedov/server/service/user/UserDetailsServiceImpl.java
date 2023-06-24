@@ -66,11 +66,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         try {
             Optional<User> optional = userRepository.findUserByEmail(form.getEmail());
             if (optional.isEmpty()) {
-                return new ResponseService(HttpStatus.OK, MessageService.USER_NOT_FOUND, form.getEmail());
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.USER_NOT_FOUND, MessageService.USER_NOT_FOUND.toString());
             }
-            return new ResponseService(HttpStatus.OK, MessageService.USER_FOUND, form.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.USER_FOUND, MessageService.USER_FOUND.toString());
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
@@ -86,12 +86,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
             User user = (User) authentication.getPrincipal();
             if ( !user.getEnabled() ) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_NOT_CONFIRM, user.getEmail());
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_NOT_CONFIRM, MessageService.EMAIL_IS_NOT_CONFIRM.toString());
             }
-            return new ResponseService(HttpStatus.OK, MessageService.OK, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.SIGNIN_SUCCESS, user);
 
         } catch (BadCredentialsException e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.USER_NOT_FOUND);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.SIGNIN_FAILED, MessageService.SIGNIN_FAILED.toString());
         }
     }
 
@@ -102,12 +102,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         try {
             //Проверка совпадения пароля и его подтверждения
             if ( !requestPassword.equals(requestConfirmationPassword) ) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.PASSWORDS_MISMATCHED);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.PASSWORDS_MISMATCHED, MessageService.PASSWORDS_MISMATCHED.toString());
             }
             //Проверка есть ли в БД пользователь с таким адресом электронной почты
             Optional<User> optionalUser = userRepository.findUserByEmail(requestEmail);
             if ( optionalUser.isPresent() && optionalUser.get().getEnabled() ) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_ALREADY_USE);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_ALREADY_USE, MessageService.EMAIL_IS_ALREADY_USE.toString());
             }
             //Удаляем пользователя если электронная почта не подтверждена и срок действия токена закончился
             if ( optionalUser.isPresent() && !optionalUser.get().getEnabled() ) {
@@ -115,21 +115,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 if (optionalToken.get().getExpirationDate().compareTo(ZonedDateTime.now()) < 0) {
                     userRepository.delete(optionalUser.get());
                 } else {
-                    return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_NOT_CONFIRM, form.getEmail());
+                    return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_NOT_CONFIRM, MessageService.EMAIL_IS_NOT_CONFIRM.toString());
                 }
             }
             //Сохраняем пользователя и токен подтверждения адреса электроной почты
             String encodedRequestPassword = new BCryptPasswordEncoder().encode(requestPassword);
             User user = new User(requestEmail, encodedRequestPassword);
             userRepository.save(user);
-            Token token = new Token( user.getId(), user.getEmail(),  tokenService.generateToken() );
+            Token token = new Token( user.getId(), user.getEmail(), "Signup",  tokenService.generateToken() );
             tokenRepository.save(token);
             //Отправка письма для подтверждения адреса электронной почты
-            String confirmationLink = "http://localhost:8080/api/user/email/confirmation/" + token.getToken();
+            String confirmationLink = "http://sedov.space/user/auth/email/confirmation/" + token.getToken();
             emailService.sendEmail(user.getEmail(), "Завершение регистрации", confirmationLink);
-            return new ResponseService(HttpStatus.OK, MessageService.OK, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.SIGNUP_SUCCESS, user);
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            System.out.println(e.getMessage());
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
@@ -141,7 +142,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     httpServletRequest,
                     httpServletResponse,
                     authentication);
-            return new ResponseService(HttpStatus.OK, MessageService.OK, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.OK, user);
         } catch (Exception e) {
             return new ResponseService(HttpStatus.OK, MessageService.UNKNOWN_PROBLEM);
         }
@@ -160,7 +161,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             user.setLastName(lastName);
             user.setPatronymicName(patronymicName);
             userRepository.save(user);
-            return new ResponseService(HttpStatus.OK, MessageService.PERSONAL_DATA_UPDATED, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.PERSONAL_DATA_UPDATED, user);
         } catch (Exception e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
         }
@@ -185,7 +186,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             String encodedRequestPassword = new BCryptPasswordEncoder().encode(requestPassword);
             user.setPassword(encodedRequestPassword);
             userRepository.save(user);
-            return new ResponseService(HttpStatus.OK, MessageService.PASSWORD_CHANGED, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.PASSWORD_CHANGED, user);
         } catch (Exception e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
         }
@@ -193,11 +194,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public ResponseService changeEmail(UserRequest form) {
         String requestEmail = form.getEmail();
-        String requestConfirmationEmail = form.getConfirmationEmail();
-        //Проверяем совпадает ли адрес электронной почты и его подтверждение в запросе от пользователя
-        if ( !requestEmail.equals(requestConfirmationEmail) ) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_MISMATCHED, form.getEmail());
-        }
         try {
             //Получаем данные текущего пользователя прощедшего аутентикацию
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -213,12 +209,32 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_ALREADY_USE);
             }
             //Создаем токен для подтверждения нового адреса электронной почты
-            Token token = new Token( user.getId(), form.getEmail(), tokenService.generateToken() );
+            Token token = new Token( user.getId(), form.getEmail(), "ChangeEmail", tokenService.generateToken() );
             tokenRepository.save(token);
-            String confirmationLink = "http://localhost:8080/api/user/email/confirmation/" + token.getToken();
+            String confirmationLink = "http://sedov.space/user/auth/email/confirmation/" + token.getToken();
             //Отправляем письмо
             emailService.sendEmail(form.getEmail(), "Изменение адреса электронной почты", confirmationLink);
-            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY, user);
+        } catch (Exception e) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+        }
+    }
+
+    public ResponseService sendSigninEmail(UserRequest form) {
+        String requestEmail = form.getEmail();
+        try {
+            Optional<User> optional = userRepository.findUserByEmail(requestEmail);
+            if (optional.isEmpty()) {
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.USER_NOT_FOUND);
+            }
+            System.out.println("here");
+            User user = optional.get();
+            Token token = new Token( user.getId(), form.getEmail(), "SigninEmail", tokenService.generateToken() );
+            tokenRepository.save(token);
+            String confirmationLink = "http://localhost:4200/user/auth/email/confirmation/" + token.getToken();
+            //Отправляем письмо
+            emailService.sendEmail(form.getEmail(), "Сброс пароля от личного кабинета", confirmationLink);
+            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY);
         } catch (Exception e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
         }
@@ -243,7 +259,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userRepository.save(user);
             token.setValid(false);
             tokenRepository.save(token);
-            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_CONFIRMED, user.getEmail());
+            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_CONFIRMED, user);
         } catch (Exception e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
         }

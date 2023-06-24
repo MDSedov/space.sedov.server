@@ -14,6 +14,9 @@ public class Token {
     @Column(name = "user_id")
     private int userId;
 
+    @Column(name = "reason")
+    private String reason;
+
     @Column(name = "email")
     private String email;
 
@@ -29,9 +32,10 @@ public class Token {
     public Token() {
     }
 
-    public Token(int userId, String email, String token) {
+    public Token(int userId, String email, String reason, String token) {
         setUserId(userId);
         setToken(token);
+        setReason(reason);
         setEmail(email);
     }
 
@@ -92,5 +96,13 @@ public class Token {
 
     public void setValid(boolean valid) {
         isValid = valid;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }
