@@ -165,7 +165,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             userRepository.save(user);
             return new ResponseService(HttpStatus.OK, MessageService.PERSONAL_DATA_UPDATED, user);
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
@@ -174,7 +174,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String requestConfirmationPassword = form.getConfirmationPassword();
         //Проверяем совпадает ли адрес электронной почты и его подтверждение в запросе от пользователя
         if ( !requestPassword.equals(requestConfirmationPassword) ) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.PASSWORDS_MISMATCHED);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.PASSWORDS_MISMATCHED, MessageService.PASSWORDS_MISMATCHED.toString());
         }
         try {
             //Получаем данные текущего пользователя прощедшего аутентикацию
@@ -182,15 +182,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             User user = (User)authentication.getPrincipal();
             //Проверяем что новый пароль не совпадает с текущим
             if ( user.getPassword().equals(requestPassword) ) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.NEW_PASSWORD_IS_THE_SAME, form.getEmail());
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.NEW_PASSWORD_IS_THE_SAME, MessageService.NEW_PASSWORD_IS_THE_SAME.toString());
             }
             //Устанавливаем новый пароль для текущего пользователя
             String encodedRequestPassword = new BCryptPasswordEncoder().encode(requestPassword);
             user.setPassword(encodedRequestPassword);
             userRepository.save(user);
-            return new ResponseService(HttpStatus.OK, MessageService.PASSWORD_CHANGED, user);
+            return new ResponseService(HttpStatus.OK, MessageService.PASSWORD_CHANGED, MessageService.PASSWORD_CHANGED.toString());
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
@@ -202,13 +202,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             User user = (User)authentication.getPrincipal();
             //Проверяем что новый адрес электронной почты не совпадает с текущим
             if ( user.getEmail().equals(form.getEmail()) ) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.NEW_EMAIL_IS_THE_SAME, form.getEmail());
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.NEW_EMAIL_IS_THE_SAME, MessageService.NEW_EMAIL_IS_THE_SAME.toString());
             }
             //Проверяем не используется ли данный адрес электронной почты другим пользователем
             //Если адрес используется другим пользователем, то проверяем подтвердил ли он его
             Optional<User> optionalAnotherUser = userRepository.findUserByEmail(requestEmail);
             if ( optionalAnotherUser.isPresent() && !optionalAnotherUser.get().getEnabled() ) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_ALREADY_USE);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.EMAIL_IS_ALREADY_USE, MessageService.EMAIL_IS_ALREADY_USE.toString());
             }
             //Создаем токен для подтверждения нового адреса электронной почты
             Token token = new Token( user.getId(), form.getEmail(), "ChangeEmail", tokenService.generateToken() );
@@ -218,7 +218,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             emailService.sendEmail(form.getEmail(), "Изменение адреса электронной почты", confirmationLink);
             return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY, user);
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
