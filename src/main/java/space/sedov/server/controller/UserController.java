@@ -96,12 +96,12 @@ public class UserController {
         return userDetailsService.confirmationEmail(token);
     }
 
-    @PostMapping("/signin/email")
+    @PostMapping("/send/email")
     @ResponseBody
-    public ResponseService sendSigninEmail(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+    public ResponseService sendConfirmationEmail(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
         }
-        return userDetailsService.sendSigninEmail(userRequest);
+        return userDetailsService.sendConfirmationEmail(userRequest);
     }
 }

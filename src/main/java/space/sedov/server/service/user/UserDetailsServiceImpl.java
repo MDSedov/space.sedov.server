@@ -92,6 +92,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         } catch (BadCredentialsException e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.SIGNIN_FAILED, MessageService.SIGNIN_FAILED.toString());
+        } catch (Exception e) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
@@ -127,7 +129,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             //Отправка письма для подтверждения адреса электронной почты
             String confirmationLink = "http://sedov.space/user/auth/email/confirmation/" + token.getToken();
             emailService.sendEmail(user.getEmail(), "Завершение регистрации", confirmationLink);
-            return new ResponseService(HttpStatus.OK, MessageService.SIGNUP_SUCCESS, user);
+            return new ResponseService(HttpStatus.OK, MessageService.SIGNUP_SUCCESS, MessageService.SIGNUP_SUCCESS.toString());
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
@@ -211,7 +213,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             //Создаем токен для подтверждения нового адреса электронной почты
             Token token = new Token( user.getId(), form.getEmail(), "ChangeEmail", tokenService.generateToken() );
             tokenRepository.save(token);
-            String confirmationLink = "http://sedov.space/user/auth/email/confirmation/" + token.getToken();
+            String confirmationLink = "http://sedov.space/user/confirmation/" + token.getToken();
             //Отправляем письмо
             emailService.sendEmail(form.getEmail(), "Изменение адреса электронной почты", confirmationLink);
             return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY, user);
@@ -220,23 +222,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
     }
 
-    public ResponseService sendSigninEmail(UserRequest form) {
+    public ResponseService sendConfirmationEmail(UserRequest form) {
         String requestEmail = form.getEmail();
         try {
             Optional<User> optional = userRepository.findUserByEmail(requestEmail);
             if (optional.isEmpty()) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.USER_NOT_FOUND);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.USER_NOT_FOUND, MessageService.USER_NOT_FOUND.toString());
             }
-            System.out.println("here");
             User user = optional.get();
-            Token token = new Token( user.getId(), form.getEmail(), "SigninEmail", tokenService.generateToken() );
+            Token token = new Token( user.getId(), form.getEmail(), "ConfirmationEmail", tokenService.generateToken() );
             tokenRepository.save(token);
-            String confirmationLink = "http://localhost:4200/user/auth/email/confirmation/" + token.getToken();
+            String confirmationLink = "http://sedov.space/user/confirmation/" + token.getToken();
             //Отправляем письмо
-            emailService.sendEmail(form.getEmail(), "Сброс пароля от личного кабинета", confirmationLink);
-            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY);
+            emailService.sendEmail(form.getEmail(), "Подтверждение адреса электронной почты", confirmationLink);
+            return new ResponseService(HttpStatus.OK, MessageService.EMAIL_SENT_SUCCESSFULLY, MessageService.EMAIL_SENT_SUCCESSFULLY.toString());
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
@@ -244,14 +245,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         try {
             Optional<Token> optionalToken = tokenRepository.findByToken(requestToken);
             if (!optionalToken.isPresent()) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TOKEN_NOT_FOUND);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TOKEN_NOT_FOUND, MessageService.TOKEN_NOT_FOUND.toString());
             }
             Token token = optionalToken.get();
             if (!token.isValid()) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TOKEN_INVALID);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TOKEN_INVALID, MessageService.TOKEN_INVALID.toString());
             }
             if (token.getExpirationDate().compareTo(ZonedDateTime.now()) < 0) {
-                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TOKEN_EXPIRED);
+                return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TOKEN_EXPIRED, MessageService.TOKEN_EXPIRED.toString());
             }
             User user = userRepository.findUserById(token.getUserId()).get();
             user.setEmail(token.getEmail());
@@ -261,7 +262,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             tokenRepository.save(token);
             return new ResponseService(HttpStatus.OK, MessageService.EMAIL_CONFIRMED, user);
         } catch (Exception e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM);
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, MessageService.UNKNOWN_PROBLEM.toString());
         }
     }
 
