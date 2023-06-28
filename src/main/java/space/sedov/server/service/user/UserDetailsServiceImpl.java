@@ -127,7 +127,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             Token token = new Token( user.getId(), user.getEmail(), "Signup",  tokenService.generateToken() );
             tokenRepository.save(token);
             //Отправка письма для подтверждения адреса электронной почты
-            String confirmationLink = "http://sedov.space/user/auth/email/confirmation/" + token.getToken();
+            String confirmationLink = "http://sedov.space/user/confirmation/" + token.getToken();
             emailService.sendEmail(user.getEmail(), "Завершение регистрации", confirmationLink);
             return new ResponseService(HttpStatus.OK, MessageService.SIGNUP_SUCCESS, MessageService.SIGNUP_SUCCESS.toString());
         } catch (Exception e) {
