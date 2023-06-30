@@ -30,9 +30,9 @@ public class UserController {
         return userDetailsService.getCurrentUser();
     }
 
-    @PostMapping("/check")
+    @PostMapping("/find/account")
     @ResponseBody
-    public ResponseService checkUser(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+    public ResponseService findUserByEmail(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
         }
@@ -92,6 +92,16 @@ public class UserController {
 
     @GetMapping(value = "/email/confirmation/{token}")
     public ResponseService confirmRegistration(@PathVariable("token") String token) {
+        System.out.println(token);
         return userDetailsService.confirmationEmail(token);
+    }
+
+    @PostMapping("/send/email")
+    @ResponseBody
+    public ResponseService sendConfirmationEmail(@Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseService(HttpStatus.BAD_REQUEST, bindingResult);
+        }
+        return userDetailsService.sendConfirmationEmail(userRequest);
     }
 }
