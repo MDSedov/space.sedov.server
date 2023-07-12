@@ -5,6 +5,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import space.sedov.server.service.response.MessageService;
+import space.sedov.server.service.response.ResponseService;
 
 import java.sql.*;
 import java.util.List;
@@ -13,9 +16,9 @@ import java.util.stream.IntStream;
 
 public class SqlCourseRepository {
 
-    private final String url = "jdbc:postgresql://localhost:5432/sql_course";
+    private final String url = "jdbc:postgresql://localhost:5433/demo";
     private final String username = "postgres";
-    private final String password = "";
+    private final String password = "MD100cs16_";
 
     public Connection getConnection() {
         try {
@@ -27,14 +30,12 @@ public class SqlCourseRepository {
         }
     }
 
-    public JSONArray executeQuery(String query) {
+    public ResponseService executeQuery(String query) {
         try {
-            System.out.println(query);
             ResultSet resultSet = getConnection().createStatement().executeQuery(query);
-            return resultSetToJSON(resultSet);
+            return new ResponseService(HttpStatus.OK, MessageService.OK, resultSetToJSON(resultSet));
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return null;
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, e.getMessage());
         }
     }
 

@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import space.sedov.server.service.user.UserRequest;
-import space.sedov.server.service.response.MessageService;
 import space.sedov.server.service.response.ResponseService;
 import space.sedov.server.service.user.UserDetailsServiceImpl;
 

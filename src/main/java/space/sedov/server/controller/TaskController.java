@@ -2,9 +2,13 @@ package space.sedov.server.controller;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import space.sedov.server.entity.Task;
+import space.sedov.server.service.response.MessageService;
+import space.sedov.server.service.response.ResponseService;
+import space.sedov.server.service.task.TaskRequest;
 import space.sedov.server.service.task.TaskServiceImpl;
 
 @RestController
@@ -18,23 +22,20 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Task getModuleById(@PathVariable int id) {
+    public ResponseService getTaskById(@PathVariable int id) {
         return taskServiceImpl.getTaskById(id);
     }
 
     @PostMapping(value = "/{id}/check", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String check(@PathVariable int id, @RequestBody String userAnswer) {
-        System.out.println(id);
-        Task task = taskServiceImpl.getTaskById(id);
+    public ResponseService check(@PathVariable int id, @RequestBody TaskRequest taskRequest) {
+        Task task = (Task) taskServiceImpl.getTaskById(id).getResponseObject();
         if (task.getType().equals("test")) {
-            System.out.println(task.getAnswer());
-            System.out.println(userAnswer);
-            return taskServiceImpl.getTestResult(task.getAnswer(), userAnswer).toString();
+            return taskServiceImpl.getTestResult(task.getAnswer(), taskRequest.getAnswer());
         } else if (task.getType().equals("request")) {
-            return taskServiceImpl.getRequestResult(task.getAnswer(), userAnswer).toString();
+            return taskServiceImpl.getRequestResult(task.getAnswer(), taskRequest.getAnswer());
         } else {
-            return new JSONObject().put("Error", "User answer type is incorrect").toString();
+            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TASK_INCORRECT_REQUEST_TYPE, MessageService.TASK_INCORRECT_REQUEST_TYPE.toString());
         }
     }
 }
