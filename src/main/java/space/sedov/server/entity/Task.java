@@ -80,6 +80,14 @@ public class Task {
         this.number = number;
     }
 
+    public int getComplexity() {
+        return complexity;
+    }
+
+    public void setComplexity(int complexity) {
+        this.complexity = complexity;
+    }
+
     public String getTitle() {
         return title;
     }

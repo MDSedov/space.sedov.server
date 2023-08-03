@@ -13,6 +13,7 @@ import space.sedov.server.repository.TaskRepository;
 import space.sedov.server.service.response.MessageService;
 import space.sedov.server.service.response.ResponseService;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -46,9 +47,9 @@ public class TaskServiceImpl implements TaskServiceInterface{
             }
             JSONObject result = new JSONObject();
             if (userAnswer.contains(correctAnswer)) {
-                result.put("result", "true");
+                result.put("taskSuccess", true);
             } else {
-                result.put("result", "false");
+                result.put("taskSuccess", false);
             }
             return new ResponseService(HttpStatus.OK, MessageService.OK, result.toString());
         } catch (Exception e) {
@@ -80,10 +81,9 @@ public class TaskServiceImpl implements TaskServiceInterface{
             result.put("taskCorrectAnswer", correctAnswer.getResponseObject());
 
             //Сравниваем результаты двух SQL запросов
-            boolean answer = requestAnswer.toString().equals(correctAnswer.toString());
-            result.put("taskAnswer", answer);
+            boolean success = Objects.equals(requestAnswer.getResponseObject().toString(), correctAnswer.getResponseObject().toString());
+            result.put("taskSuccess", success);
 
-            System.out.println(result);
             return new ResponseService(HttpStatus.OK, MessageService.OK, result.toString());
         } catch (NullPointerException e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TASK_SQL_REQUEST_IS_EMPTY, MessageService.TASK_SQL_REQUEST_IS_EMPTY.toString());
