@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 
 public class SqlCourseRepository {
 
-    private final String url = "jdbc:postgresql://localhost:5433/demo";
+    private final String url = "jdbc:postgresql://sedov.space:5433/demo";
     private final String username = "postgres";
     private final String password = "MD100cs16_";
 
