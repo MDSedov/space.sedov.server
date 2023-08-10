@@ -35,3 +35,6 @@ build/
 ### Spring Boot ###
 src/main/resources/application.properties
 src/main/resources/application-dev.properties
+
+### IDEA ###
+.idea
