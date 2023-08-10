@@ -21,6 +21,9 @@ public class TaskServiceImpl implements TaskServiceInterface{
     @Autowired
     private final TaskRepository taskRepository;
 
+    @Autowired
+    private SqlCourseRepository sqlCourseRepository;
+
     public TaskServiceImpl(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
@@ -63,7 +66,7 @@ public class TaskServiceImpl implements TaskServiceInterface{
             if (userQuery.isEmpty()) {
                 return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TASK_SQL_REQUEST_IS_EMPTY, MessageService.TASK_SQL_REQUEST_IS_EMPTY.toString());
             }
-            SqlCourseRepository sqlCourseRepository = new SqlCourseRepository();
+//            SqlCourseRepository sqlCourseRepository = new SqlCourseRepository();
             JSONObject result = new JSONObject();
 
             //Выполняем SQL запрос полученный от пользователя
@@ -85,8 +88,6 @@ public class TaskServiceImpl implements TaskServiceInterface{
             result.put("taskSuccess", success);
 
             return new ResponseService(HttpStatus.OK, MessageService.OK, result.toString());
-        } catch (NullPointerException e) {
-            return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.TASK_SQL_REQUEST_IS_EMPTY, MessageService.TASK_SQL_REQUEST_IS_EMPTY.toString());
         } catch (Exception e) {
             return new ResponseService(HttpStatus.BAD_REQUEST, MessageService.UNKNOWN_PROBLEM, e.getMessage());
         }

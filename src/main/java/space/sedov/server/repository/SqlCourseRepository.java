@@ -3,27 +3,39 @@ package space.sedov.server.repository;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import space.sedov.server.service.response.MessageService;
 import space.sedov.server.service.response.ResponseService;
 
+import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class SqlCourseRepository {
+@Service
+public class SqlCourseRepository implements InitializingBean {
 
-    private final String url = "jdbc:postgresql://sedov.space:5433/demo";
-    private final String username = "postgres";
-    private final String password = "MD100cs16_";
+    @Value("${spring.sql.course.datasource.url}")
+    private String url;
+
+    @Value("${spring.sql.course.datasource.username}")
+    private String username;
+
+    @Value("${spring.sql.course.datasource.password}")
+    private String password;
 
     public Connection getConnection() {
         try {
-            Connection connection = DriverManager.getConnection(url, username, password);
-            return connection;
+            return DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return null;
@@ -83,5 +95,10 @@ public class SqlCourseRepository {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
     }
 }
