@@ -44,7 +44,7 @@ public class LessonServiceImpl implements LessonServiceInterface{
         Optional<Lesson> optional = lessonRepository.findById(id);
         if (optional.isPresent()) {
             Lesson lesson = optional.get();
-            return taskRepository.findTasksByLesson(lesson);
+            return taskRepository.findTasksByLessonOrderByNumber(lesson);
         }
         return null;
     }

@@ -13,5 +13,5 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     public List<Task> findTasksByModule(Module module);
 
-    public List<Task> findTasksByLesson(Lesson lesson);
+    public List<Task> findTasksByLessonOrderByNumber(Lesson lesson);
 }
