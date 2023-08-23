@@ -30,6 +30,17 @@ public class Lesson {
     @Column(name = "time")
     private String time;
 
+    @Column(name = "count_tasks")
+    private String countTasks;
+
+    public String getCountTasks() {
+        return countTasks;
+    }
+
+    public void setCountTasks(String countTasks) {
+        this.countTasks = countTasks;
+    }
+
     public String getTime() {
         return time;
     }
